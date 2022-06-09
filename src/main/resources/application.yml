@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    druid:
+      username: root
+      password: 111111
+      url: jdbc:mysql://localhost:3306/donger?serverTimezone=UTC&userUnicode=true&characterEncoding=utf-8
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+    type: com.alibaba.druid.pool.DruidDataSource
+
+mybatis-plus:
+  type-aliases-package: com.example.shiro.pojo
+  configuration:
+    map-underscore-to-camel-case: true
