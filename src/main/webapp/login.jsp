@@ -13,6 +13,7 @@
 <form action="${pageContext.request.contextPath}/user/login" method="post">
     <p>用户名：<input type="text" name="username"></p>
     <p>密码  ：<input type="text" name="password"></p>
+    <p>验证码: <input type="text" name="verifyCode"><img src="${pageContext.request.contextPath}/user/getImage" alt=""></p>
     <input type="submit" value="登录">
 </body>
 </html>

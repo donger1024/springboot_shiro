@@ -19,7 +19,6 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
-import javax.jnlp.PersistenceService;
 import java.util.List;
 
 /**

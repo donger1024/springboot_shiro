@@ -2,6 +2,7 @@ package com.example.shiro.controller;
 
 import com.example.shiro.pojo.User;
 import com.example.shiro.service.UserService;
+import com.example.shiro.utils.VerifyCodeUtil;
 import org.apache.jasper.security.SecurityUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -13,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.security.Security;
 
 @Controller
@@ -22,16 +27,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
     @RequestMapping("/login")
-    public String login(String username, String password) {
+    public String login(String username, String password, String verifyCode, HttpSession session) {
         //获取当前登录用户
         Subject subject = SecurityUtils.getSubject();
-
+        // 校验验证码
+        String verifyCodes = (String) session.getAttribute("verifyCode");
         try {
-            //执行登录操作
-            subject.login(new UsernamePasswordToken(username, password));
-            //认证通过后直接跳转index.jsp
-            return "redirect:/index.jsp";
+            if (verifyCodes.equalsIgnoreCase(verifyCode)) {
+                //执行登录操作
+                subject.login(new UsernamePasswordToken(username, password));
+                //认证通过后直接跳转index.jsp
+                return "redirect:/index.jsp";
+            }else {
+                throw new RuntimeException("验证码错误");
+            }
         } catch (UnknownAccountException e) {
             e.printStackTrace();
             System.out.println("用户名错误~");
@@ -68,5 +79,16 @@ public class UserController {
             e.printStackTrace();
         }
         return "redirect:/register.jsp";
+    }
+    @RequestMapping("getImage")
+    public void getImage(HttpSession session, HttpServletResponse response) throws IOException {
+        //生成验证码
+        String verifyCode = VerifyCodeUtil.generateVerifyCode(4);
+        //验证码放入session
+        session.setAttribute("verifyCode",verifyCode);
+        //验证码存入图片
+        ServletOutputStream os = response.getOutputStream();
+        response.setContentType("image/png");
+        VerifyCodeUtil.outputImage(180,40,os,verifyCode);
     }
 }
